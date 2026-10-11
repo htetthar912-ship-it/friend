@@ -1,0 +1,1250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e3c72">
+  <meta name="description" content="A little place just for us: a one-of-a-kind friendship story under a sky full of memories.">
+  <title>Hello, My Friend! — A Memory House</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%231e3c72'/%3E%3Cpath d='M12 31 32 13l20 18M19 29v23h26V29' fill='none' stroke='%23f6d8a9' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M32 44s-7-4-7-8a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 4-7 8-7 8Z' fill='%23f18a73'/%3E%3C/svg%3E">
+  <style>
+    /* =====================================================================
+       MEMORY HOUSE — all styles live here on purpose.
+       This is a single-file, dependency-free friendship storybook.
+       ===================================================================== */
+    :root {
+      color-scheme: light;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Myanmar", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      --friendship-blue: #1e3c72;
+      --ink: #26324a;
+      --cream: #fff8ec;
+      --gold: #ffd591;
+      --ease-spring: cubic-bezier(.22, 1, .36, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { min-width: 320px; min-height: 100%; background: #1e3c72; }
+    body { min-width: 320px; min-height: 100vh; min-height: 100svh; margin: 0; overflow: hidden; }
+    button { font: inherit; }
+    button:focus-visible, summary:focus-visible { outline: 3px solid #ffd987; outline-offset: 4px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    /* Only one story page is interactive at a time. Fade and lift lend each
+       transition a gentle storybook page-turn instead of a hard cut. */
+    .screen {
+      position: fixed; inset: 0; z-index: 0;
+      display: flex; flex-direction: column;
+      min-height: 100vh; min-height: 100svh;
+      padding: max(18px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      overflow: auto;
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transform: translateY(12px) scale(.99);
+      transition: opacity .75s var(--ease-spring), transform .8s var(--ease-spring), visibility .8s;
+      scrollbar-width: thin;
+    }
+    .screen.is-active { z-index: 1; opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0) scale(1); }
+
+    /* Page 1: a quiet blue dusk, softened with hand-painted pools of light. */
+    .welcome-screen {
+      justify-content: center; align-items: center; text-align: center; isolation: isolate;
+      color: #fffaf3;
+      background: linear-gradient(138deg, #1e3c72 0%, #254783 52%, #2a5298 100%);
+    }
+    .welcome-screen::before, .welcome-screen::after { content: ""; position: absolute; z-index: -1; pointer-events: none; border-radius: 50%; filter: blur(2px); }
+    .welcome-screen::before { width: min(74vw, 760px); aspect-ratio: 1; top: -34%; left: -17%; background: radial-gradient(circle, rgba(125,190,255,.2), transparent 67%); }
+    .welcome-screen::after { width: min(74vw, 700px); aspect-ratio: 1; right: -21%; bottom: -39%; background: radial-gradient(circle, rgba(246,181,146,.17), transparent 68%); }
+    .welcome-spark { position: absolute; pointer-events: none; border: 1px solid rgba(255,227,173,.72); border-radius: 50%; box-shadow: 0 0 16px rgba(255,215,148,.48); animation: drift 7s ease-in-out infinite; }
+    .welcome-spark:nth-of-type(1) { width: 7px; height: 7px; left: 17%; top: 23%; animation-delay: -2s; }
+    .welcome-spark:nth-of-type(2) { width: 5px; height: 5px; right: 21%; top: 31%; animation-delay: -4s; }
+    .welcome-spark:nth-of-type(3) { width: 9px; height: 9px; right: 18%; bottom: 20%; animation-delay: -1s; }
+    .welcome-spark:nth-of-type(4) { width: 5px; height: 5px; left: 25%; bottom: 26%; animation-delay: -5s; }
+    @keyframes drift { 0%,100% { transform: translateY(0); opacity: .48; } 50% { transform: translateY(-15px); opacity: 1; } }
+    .welcome-content { width: min(100%, 780px); position: relative; padding: 28px 12px 18px; }
+    .brand-seal { display: inline-grid; width: 72px; height: 72px; place-items: center; border: 1px solid rgba(255,240,214,.5); border-radius: 24px; background: rgba(255,255,255,.105); box-shadow: 0 14px 44px rgba(7,22,50,.22), inset 0 1px rgba(255,255,255,.22); backdrop-filter: blur(10px); animation: seal-bob 5s ease-in-out infinite; }
+    .brand-seal svg { width: 47px; height: 47px; }
+    @keyframes seal-bob { 50% { transform: translateY(-5px) rotate(-2deg); } }
+    .welcome-eyebrow, .scene-kicker { margin: 25px 0 14px; color: rgba(255,236,205,.88); font-size: .7rem; font-weight: 800; letter-spacing: .23em; text-transform: uppercase; }
+    .welcome-title { max-width: 760px; margin: 0 auto; font-size: clamp(2.65rem, 8.4vw, 6.7rem); font-weight: 820; line-height: 1.035; letter-spacing: -.065em; text-wrap: balance; text-shadow: 0 9px 34px rgba(8,24,55,.28); animation: title-heartbeat 3.2s ease-in-out infinite; }
+    .welcome-title .wave { display: inline-block; transform-origin: 70% 80%; animation: wave-hello 2.2s ease-in-out infinite; }
+    @keyframes title-heartbeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.024); } }
+    @keyframes wave-hello { 0%,65%,100% { transform: rotate(0); } 73% { transform: rotate(17deg); } 81% { transform: rotate(-8deg); } 89% { transform: rotate(12deg); } }
+    .welcome-subtitle { max-width: 410px; margin: 20px auto 31px; color: rgba(246,245,255,.76); font-size: clamp(1rem, 2.8vw, 1.12rem); line-height: 1.75; }
+    .primary-button, .touch-button, .secondary-button {
+      position: relative; display: inline-flex; justify-content: center; align-items: center; gap: 10px;
+      min-height: 56px; border: 0; border-radius: 999px; cursor: pointer;
+      font-size: .9rem; font-weight: 850; letter-spacing: .14em;
+      transition: transform .22s var(--ease-spring), box-shadow .25s ease, filter .25s ease, opacity .25s;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    }
+    .primary-button { min-width: 204px; padding: 0 34px; color: #243556; background: linear-gradient(135deg, #fff5dd, #ffd891 77%); box-shadow: 0 9px 0 #d39a53, 0 20px 48px rgba(7,22,50,.28), inset 0 1px 0 rgba(255,255,255,.9); }
+    .primary-button::after { content: ""; position: absolute; inset: -7px; border: 1px solid rgba(255,224,165,.34); border-radius: inherit; animation: ring-glow 2.8s ease-out infinite; pointer-events: none; }
+    @keyframes ring-glow { 0% { transform: scale(.95); opacity: .85; } 100% { transform: scale(1.2); opacity: 0; } }
+    .primary-button:hover { transform: translateY(-3px); box-shadow: 0 12px 0 #d39a53, 0 27px 55px rgba(7,22,50,.34); filter: saturate(1.08); }
+    .primary-button:active { transform: translateY(4px); box-shadow: 0 3px 0 #d39a53, 0 10px 26px rgba(7,22,50,.24); }
+    .primary-button:disabled, .touch-button:disabled { cursor: default; opacity: .7; }
+    .enter-hint { margin: 20px 0 0; color: rgba(248,246,243,.72); font-size: .86rem; letter-spacing: .025em; }
+    .welcome-footnote { margin: 44px auto 0; color: rgba(225,232,248,.54); font-size: .75rem; letter-spacing: .13em; text-transform: uppercase; }
+
+    /* A shared editorial top strip for the illustrated scenes. */
+    .story-topbar { z-index: 2; width: min(100%, 1120px); display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 0 auto; }
+    .mini-brand { display: inline-flex; align-items: center; gap: 11px; color: rgba(40,50,70,.8); font-size: .75rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .mini-brand-mark { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(38,50,74,.12); border-radius: 13px; background: rgba(255,255,255,.57); box-shadow: 0 4px 14px rgba(35,59,82,.08); }
+    .mini-brand-mark svg { width: 25px; height: 25px; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+    .story-chip, .sound-button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; border: 1px solid rgba(255,255,255,.74); border-radius: 999px; background: rgba(255,255,255,.48); backdrop-filter: blur(12px); box-shadow: 0 4px 18px rgba(30,54,83,.06); color: #40506b; font-size: .7rem; font-weight: 800; letter-spacing: .085em; text-transform: uppercase; }
+    .sound-button { cursor: pointer; transition: background .2s ease, transform .2s ease; }
+    .sound-button:hover { transform: translateY(-1px); background: rgba(255,255,255,.8); }
+    .sound-button .sound-dot { width: 7px; height: 7px; border-radius: 50%; background: #ac8060; }
+    .sound-button[data-playing="true"] .sound-dot { background: #54a879; box-shadow: 0 0 0 4px rgba(84,168,121,.13); }
+    .sound-button[data-playing="false"] .sound-dot { background: #d38a73; }
+
+    /* Page 2: the actual pixels live in the canvas. The DOM door shares its
+       exact scaled position so CSS can do a true perspective hinge swing. */
+    .courtyard-screen { align-items: center; color: #293950; background: linear-gradient(180deg, #93c5fd 0%, #c6e5fc 50%, #e0f2fe 100%); isolation: isolate; }
+    .courtyard-screen::before { position: absolute; z-index: -1; content: ""; top: 7%; left: 7%; width: 260px; height: 175px; border-radius: 50%; background: rgba(255,255,255,.18); filter: blur(30px); }
+    .courtyard-header { z-index: 2; width: min(100%, 1120px); display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 12px auto 5px; }
+    .courtyard-heading { margin: 0; color: #213a5a; font-size: clamp(1.35rem, 3.1vw, 2.4rem); font-weight: 800; line-height: 1.1; letter-spacing: -.04em; }
+    .courtyard-subheading { margin: 9px 0 0; color: #4b637d; font-size: .91rem; line-height: 1.5; }
+    .scene-number { flex: 0 0 auto; padding: 9px 13px; border: 1px solid rgba(255,255,255,.72); border-radius: 999px; color: #57718c; background: rgba(255,255,255,.46); font-size: .67rem; font-weight: 850; letter-spacing: .12em; }
+    .courtyard-stage-wrap { flex: 1 1 auto; width: 100%; min-height: 160px; display: grid; place-items: center; padding: 8px 0; }
+    /* Limit width (not height) so this 1000:620 stage can never squeeze into a mismatched canvas. */
+    .art-surface { position: relative; isolation: isolate; width: min(100%, 1080px, 103vh); aspect-ratio: 1000 / 620; overflow: hidden; border: 1px solid rgba(255,255,255,.77); border-radius: clamp(19px, 3vw, 34px); background: rgba(255,255,255,.08); box-shadow: 0 19px 50px rgba(36,82,127,.15), 0 5px 16px rgba(34,73,115,.08), inset 0 1px rgba(255,255,255,.5); }
+    .art-surface canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+    .stage-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 45px rgba(19,45,71,.055); }
+    .front-door {
+      position: absolute; z-index: 2;
+      left: 47.45%; top: 57.45%; width: 5.15%; height: 13.1%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0; border: 3px solid #f9e9ca; border-radius: 4px 4px 2px 2px;
+      transform-origin: left center; transform: perspective(660px) rotateY(0deg);
+      background: linear-gradient(90deg, #77462e 0%, #8d5835 45%, #73422c 100%);
+      box-shadow: inset 0 0 0 2px rgba(54,30,19,.32), inset 0 -8px rgba(49,29,21,.12), 5px 4px 9px rgba(29,46,44,.21);
+      cursor: pointer; transition: transform 1.5s cubic-bezier(.65,.04,.35,1), box-shadow .3s ease;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    }
+    .front-door::before { content: ""; position: absolute; inset: 8px 7px; border: 1px solid rgba(244,203,143,.36); border-top: 0; border-radius: 1px; box-shadow: inset 0 -23px 0 -22px rgba(247,218,175,.33), inset 0 -45px 0 -44px rgba(247,218,175,.33); }
+    .front-door::after { content: ""; position: absolute; top: 50%; right: 10%; width: 7px; aspect-ratio: 1; border-radius: 50%; background: #f7cf7c; box-shadow: 0 0 9px rgba(255,217,137,.6); }
+    .front-door:hover { box-shadow: inset 0 0 0 2px rgba(54,30,19,.32), 0 0 0 3px rgba(255,240,201,.65), 5px 4px 9px rgba(29,46,44,.21); }
+    .front-door.is-open { transform: perspective(660px) rotateY(-112deg); }
+    .courtyard-footer { z-index: 2; width: min(100%, 1120px); display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 4px auto 2px; }
+    .scene-note { max-width: 420px; margin: 0; color: #516985; font-size: .83rem; line-height: 1.55; }
+    .open-door-button { min-width: 190px; min-height: 51px; padding: 0 23px; color: #fffaf3; background: linear-gradient(135deg, #85553b, #69422f); box-shadow: 0 5px 0 #503322, 0 11px 24px rgba(46,55,53,.17); font-size: .76rem; }
+    .open-door-button:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #503322, 0 16px 28px rgba(46,55,53,.2); }
+    .courtyard-caption { position: absolute; z-index: 2; top: 14px; left: 15px; padding: 8px 12px; border: 1px solid rgba(255,255,255,.58); border-radius: 999px; color: #385471; background: rgba(255,255,255,.52); backdrop-filter: blur(10px); font-size: .62rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; }
+    .courtyard-caption::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: #83b87e; vertical-align: 1px; }
+
+    /* Page 3: one canvas, a time-based story state, and accessible DOM controls.
+       The photo frame and final greeting are intentionally DOM, not pixels. */
+    .memory-screen { isolation: isolate; align-items: center; color: #493d43; background: linear-gradient(145deg, #fffbfa 0%, #fff5f1 55%, #f9edf0 100%); }
+    .memory-screen::before { position: absolute; content: ""; z-index: -1; right: -8%; top: -18%; width: min(50vw, 500px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(249,208,203,.30), transparent 67%); pointer-events: none; }
+    .memory-app-shell { flex: 1; width: 100%; min-height: min(100%, 790px); display: flex; flex-direction: column; align-items: center; }
+    .memory-header { position: relative; z-index: 3; width: min(100%, 1110px); display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 20px; padding: 8px 0 3px; }
+    .memory-title-block { min-width: 0; }
+    .memory-eyebrow { margin: 0 0 9px; color: #ae7c79; font-size: .66rem; font-weight: 850; letter-spacing: .18em; text-transform: uppercase; }
+    .memory-title { margin: 0; color: #54404a; font-size: clamp(1.15rem, 3vw, 1.95rem); font-weight: 790; line-height: 1.46; letter-spacing: -.035em; text-wrap: balance; }
+    .memory-subtitle { margin: 4px 0 0; color: #997f82; font-size: .86rem; line-height: 1.48; }
+    .memory-header-tools { display: flex; align-items: center; gap: 9px; }
+    .memory-pill { white-space: nowrap; color: #80656b; border-color: rgba(203,169,168,.45); background: rgba(255,255,255,.64); }
+    .memory-header .sound-button { color: #80656b; border-color: rgba(203,169,168,.4); background: rgba(255,255,255,.65); }
+    .memory-story { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; min-height: 0; }
+    /* The height-derived width preserves the artwork's native ratio at short and wide viewports. */
+    .memory-stage-frame { position: relative; display: grid; width: min(100%, 1050px, 91vh); aspect-ratio: 1000 / 620; margin: 6px auto 0; }
+    .memory-stage { position: absolute; inset: 0; overflow: hidden; border: 1px solid rgba(255,255,255,.84); border-radius: clamp(17px, 2.4vw, 29px); background: #f4e2cf; box-shadow: 0 17px 49px rgba(130,91,84,.13), 0 3px 12px rgba(107,70,68,.08), inset 0 1px rgba(255,255,255,.65); }
+    .memory-stage canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+    .story-stage-gloss { position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 45px rgba(70,39,44,.055); }
+    .stage-status { position: absolute; z-index: 3; left: 16px; top: 16px; max-width: calc(100% - 32px); padding: 9px 13px; border: 1px solid rgba(255,255,255,.58); border-radius: 999px; color: #654e53; background: rgba(255,250,246,.67); backdrop-filter: blur(12px); font-size: .62rem; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    .memory-photo { position: absolute; z-index: 4; display: none; width: clamp(124px, 19vw, 202px); aspect-ratio: 1.13 / 1; padding: 7px 7px 24px; overflow: hidden; border: 1px solid rgba(255,251,232,.95); border-radius: 8px; background: linear-gradient(145deg, #fffdf4, #fce6c5); box-shadow: 0 0 0 1px rgba(255,227,169,.48), 0 0 31px rgba(255,200,94,.72), 0 0 78px rgba(251,111,173,.29), 0 14px 30px rgba(18,20,44,.37); opacity: 0; transform: translate(-50%,-50%) scale(.76) rotate(-3deg); will-change: opacity, transform; pointer-events: none; }
+    .memory-photo.is-visible { display: block; }
+    .memory-photo img { display: block; width: 100%; height: 100%; border-radius: 3px; background: linear-gradient(145deg, #f6d9c9, #d9ddec); object-fit: cover; }
+    .memory-photo figcaption { position: absolute; right: 8px; bottom: 5px; left: 8px; overflow: hidden; color: #6f5655; font-family: Georgia, serif; font-size: .7rem; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+    .photo-fallback { position: absolute; inset: 8px 8px 24px; display: none; place-items: center; border-radius: 3px; background: radial-gradient(circle at 50% 35%, #fff2db, #f3d9cf 48%, #c4cbe0 100%); color: #7d6064; text-align: center; }
+    .photo-fallback.is-visible { display: grid; }
+    .photo-fallback-icon { display: block; font-size: 2.3rem; filter: drop-shadow(0 3px 5px rgba(133,84,98,.2)); }
+    .photo-fallback-label { margin-top: 4px; display: block; font-size: .54rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .good-luck-title { position: absolute; z-index: 5; top: 25%; left: 50%; width: calc(100% - 30px); margin: 0; color: #fff7ce; text-align: center; text-wrap: balance; font-size: clamp(1.08rem, 5vw, 3.2rem); font-weight: 950; line-height: 1.15; letter-spacing: .055em; text-shadow: 0 0 8px #fff1ad, 0 0 22px #ffe381, 0 0 48px #f776d7, 0 0 88px #9186ff; opacity: 0; transform: translate(-50%, 11px) scale(.94); transition: opacity 1.7s var(--ease-spring), transform 1.8s var(--ease-spring); pointer-events: none; }
+    .good-luck-title.is-visible { opacity: 1; transform: translate(-50%, 0) scale(1); animation: neon-glow 2.9s ease-in-out 1.8s infinite alternate; }
+    @keyframes neon-glow { to { filter: brightness(1.28); text-shadow: 0 0 12px #fff7cf, 0 0 34px #ffce73, 0 0 64px #f776d7, 0 0 118px #9186ff; } }
+    .memory-controls { width: min(100%, 1000px); display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 1px 3px; }
+    .chapter-controls { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .chapter-mark { display: grid; flex: 0 0 auto; width: 37px; height: 37px; place-items: center; border: 1px solid rgba(187,151,148,.24); border-radius: 13px; color: #a47471; background: rgba(255,255,255,.66); box-shadow: 0 5px 14px rgba(130,91,84,.07); font-size: .9rem; }
+    .chapter-copy { min-width: 0; }
+    .chapter-copy strong { display: block; overflow: hidden; color: #5f4a4e; font-size: .73rem; font-weight: 850; letter-spacing: .06em; text-overflow: ellipsis; white-space: nowrap; }
+    .chapter-copy span { display: block; margin-top: 3px; color: #9a8385; font-size: .7rem; line-height: 1.35; }
+    .story-actions { flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
+    .secondary-button { min-height: 41px; padding: 0 15px; border: 1px solid rgba(176,143,145,.26); color: #80666b; background: rgba(255,255,255,.74); box-shadow: 0 3px 12px rgba(111,76,80,.05); font-size: .66rem; letter-spacing: .1em; }
+    .secondary-button:hover { transform: translateY(-1px); box-shadow: 0 7px 16px rgba(111,76,80,.11); }
+    .story-actions[hidden], .firework-controls[hidden], .secondary-button[hidden], .touch-button[hidden] { display: none; }
+    .firework-controls { display: flex; flex: 0 0 auto; align-items: center; gap: 12px; }
+    .touch-button { min-width: 151px; min-height: 51px; padding: 0 24px; color: #fffaf4; background: linear-gradient(135deg, #e66855, #cc4767 72%); box-shadow: 0 5px 0 #a33755, 0 12px 25px rgba(172,65,89,.2), inset 0 1px rgba(255,255,255,.27); font-size: .75rem; letter-spacing: .18em; }
+    .touch-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 0 #a33755, 0 17px 31px rgba(172,65,89,.24); }
+    .touch-button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #a33755, 0 7px 17px rgba(172,65,89,.18); }
+    .touch-button:disabled { color: rgba(255,250,244,.8); box-shadow: 0 3px 0 #a33755, 0 6px 14px rgba(172,65,89,.11); }
+    .touch-button .touch-spark { font-size: 1rem; letter-spacing: 0; }
+    .firework-progress { display: flex; align-items: center; gap: 5px; color: #947b81; font-size: .62rem; font-weight: 850; letter-spacing: .08em; white-space: nowrap; }
+    .progress-dots { display: inline-flex; align-items: center; gap: 4px; }
+    .progress-dot { width: 7px; height: 7px; border: 1px solid #cca9a7; border-radius: 50%; background: transparent; transition: background .35s ease, box-shadow .35s ease, transform .35s ease; }
+    .progress-dot.is-done { border-color: #df9866; background: #efa969; box-shadow: 0 0 8px rgba(255,177,91,.45); transform: scale(1.08); }
+    .memory-extension { width: min(100%, 1000px); margin: 5px auto 0; }
+    .memory-extension details { border-top: 1px solid rgba(174,137,139,.19); }
+    .memory-extension summary { width: fit-content; padding: 7px 2px; color: #a08082; cursor: pointer; list-style: none; font-size: .65rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+    .memory-extension summary::-webkit-details-marker { display: none; }
+    .memory-extension summary::after { content: "＋"; display: inline-block; margin-left: 8px; color: #c48784; transition: transform .2s ease; }
+    .memory-extension details[open] summary::after { content: "−"; }
+    .extension-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 5px 0 13px; }
+    .extension-slot { min-height: 64px; padding: 12px 14px; border: 1px dashed rgba(177,137,139,.4); border-radius: 14px; color: #997e80; background: rgba(255,255,255,.43); font-size: .69rem; line-height: 1.48; }
+    .extension-slot strong { display: block; margin-bottom: 3px; color: #745f65; font-size: .7rem; letter-spacing: .025em; }
+    .endnote { position: absolute; width: 1px; height: 1px; overflow: hidden; }
+
+    @media (max-width: 680px) {
+      .screen { padding-right: max(16px, env(safe-area-inset-right)); padding-left: max(16px, env(safe-area-inset-left)); }
+      .welcome-content { padding-top: 12px; }
+      .welcome-eyebrow { margin-top: 22px; font-size: .61rem; }
+      .welcome-subtitle { max-width: 330px; margin: 17px auto 28px; font-size: .96rem; }
+      .welcome-footnote { margin-top: 36px; }
+      .story-topbar { gap: 8px; }
+      .mini-brand { gap: 8px; font-size: .61rem; letter-spacing: .08em; }
+      .mini-brand-mark { width: 34px; height: 34px; border-radius: 12px; }
+      .story-chip, .sound-button { min-height: 35px; padding: 0 10px; font-size: .6rem; letter-spacing: .04em; }
+      .courtyard-header { align-items: center; margin-top: 9px; }
+      .courtyard-heading { font-size: clamp(1.25rem, 5.5vw, 1.9rem); }
+      .courtyard-subheading { max-width: 290px; margin-top: 5px; font-size: .79rem; }
+      .scene-number { padding: 8px 9px; font-size: .56rem; }
+      .courtyard-stage-wrap { min-height: 0; padding: 9px 0; }
+      .art-surface { width: min(100%, 88.5vh); }
+      .courtyard-caption { top: 8px; left: 8px; padding: 6px 8px; font-size: .5rem; }
+      .front-door { border-width: 2px; }
+      .courtyard-footer { align-items: center; margin-top: 2px; }
+      .scene-note { max-width: 47%; font-size: .7rem; }
+      .open-door-button { min-width: 0; min-height: 47px; padding: 0 15px; font-size: .64rem; letter-spacing: .09em; }
+      .memory-header { column-gap: 8px; }
+      .memory-eyebrow { margin-bottom: 4px; font-size: .56rem; letter-spacing: .13em; }
+      .memory-title { font-size: clamp(1rem, 4.6vw, 1.4rem); }
+      .memory-subtitle { font-size: .73rem; }
+      .memory-pill { display: none; }
+      .memory-header-tools { gap: 5px; }
+      .memory-header .sound-button { min-height: 34px; padding: 0 9px; }
+      .memory-stage-frame { width: min(100%, 76vh); margin-top: 7px; }
+      .stage-status { top: 9px; left: 9px; padding: 7px 9px; font-size: .52rem; letter-spacing: .09em; }
+      .memory-photo { width: clamp(118px, 33vw, 155px); padding: 5px 5px 21px; }
+      .memory-photo figcaption { bottom: 4px; font-size: .62rem; }
+      .good-luck-title { top: 24%; font-size: clamp(1rem, 5.1vw, 1.65rem); }
+      .memory-controls { flex-wrap: wrap; gap: 9px; padding-top: 9px; }
+      .chapter-controls { flex: 1 1 155px; gap: 8px; }
+      .chapter-mark { width: 32px; height: 32px; border-radius: 11px; }
+      .chapter-copy strong { font-size: .65rem; }
+      .chapter-copy span { font-size: .62rem; }
+      .story-actions { gap: 6px; }
+      .secondary-button { min-height: 38px; padding: 0 10px; font-size: .58rem; letter-spacing: .06em; }
+      .firework-controls { flex: 1 1 100%; justify-content: space-between; padding-left: 40px; }
+      .touch-button { min-width: 129px; min-height: 47px; padding: 0 17px; }
+      .firework-progress { font-size: .57rem; }
+      .memory-extension { margin-top: 2px; }
+      .extension-slots { grid-template-columns: 1fr; gap: 6px; }
+      .extension-slot { min-height: auto; padding: 9px 12px; }
+    }
+    @media (max-width: 390px) {
+      .screen { padding-right: 13px; padding-left: 13px; }
+      .scene-note { max-width: 42%; font-size: .64rem; }
+      .open-door-button { padding: 0 11px; }
+      .memory-title { font-size: 1rem; }
+      .memory-subtitle { font-size: .68rem; }
+    }
+    @media (max-height: 690px) and (min-width: 681px) {
+      .courtyard-heading { font-size: 1.45rem; }
+      .courtyard-subheading { margin-top: 5px; }
+      .memory-title { font-size: 1.38rem; }
+      .welcome-footnote { margin-top: 27px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- The looping track is intentionally a local placeholder. Add bg.mp3 next
+       to this HTML file; it will be started only after the ENTER gesture. -->
+  <audio id="backgroundMusic" src="friend.mp3.mp4" loop preload="none"></audio>
+  <p class="sr-only" id="liveAnnouncement" role="status" aria-live="polite" aria-atomic="true"></p>
+
+  <!-- ===================================================== Page 1: Welcome -->
+  <main class="screen welcome-screen is-active" id="welcomeScreen" aria-hidden="false">
+    <span class="welcome-spark" aria-hidden="true"></span><span class="welcome-spark" aria-hidden="true"></span>
+    <span class="welcome-spark" aria-hidden="true"></span><span class="welcome-spark" aria-hidden="true"></span>
+    <div class="welcome-content">
+      <div class="brand-seal" aria-hidden="true">
+        <svg viewBox="0 0 56 56" fill="none"><path d="m8 26 20-17 20 17M14 24v23h28V24" stroke="#ffe6ba" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 40s-7-4.4-7-8.3a4.1 4.1 0 0 1 7-2.5 4.1 4.1 0 0 1 7 2.5c0 3.9-7 8.3-7 8.3Z" fill="#f28b78"/><path d="M19 47h18" stroke="#ffe6ba" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </div>
+      <p class="welcome-eyebrow">A little place just for us</p>
+      <h1 class="welcome-title">Hello, My Friend! <span class="wave" aria-hidden="true">👋</span></h1>
+      <p class="welcome-subtitle">I saved a tiny story for you. There’s a little house, a familiar face, and a sky full of memories waiting at the end.</p>
+      <button class="primary-button" id="enterButton" type="button"><span>ENTER</span><span aria-hidden="true">→</span></button>
+      <p class="enter-hint">Please click this button</p>
+      <p class="welcome-footnote">A journey made for my best friend</p>
+    </div>
+  </main>
+
+  <!-- =========================================== Page 2: House & courtyard -->
+  <main class="screen courtyard-screen" id="courtyardScreen" aria-hidden="true">
+    <div class="story-topbar">
+      <div class="mini-brand"><span class="mini-brand-mark" aria-hidden="true"><svg viewBox="0 0 34 34" fill="none"><path d="m5 17 12-11 12 11M9 16v13h16V16" stroke="#8d684e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 24s-4-2-4-4.3a2.5 2.5 0 0 1 4-1.5 2.5 2.5 0 0 1 4 1.5c0 2.3-4 4.3-4 4.3Z" fill="#de8179"/></svg></span><span>Our little story</span></div>
+      <div class="topbar-actions"><span class="story-chip">The house · 01 / 03</span><button class="sound-button" type="button" data-playing="false" aria-label="Mute music" aria-pressed="false"><span class="sound-dot" aria-hidden="true"></span><span class="sound-label">Sound on</span></button></div>
+    </div>
+    <header class="courtyard-header">
+      <div><h2 class="courtyard-heading">A little house, just for us.</h2><p class="courtyard-subheading">The afternoon is bright, the dogs are out, and the front door is waiting.</p></div>
+      <span class="scene-number">CHAPTER 01</span>
+    </header>
+    <div class="courtyard-stage-wrap">
+      <div class="art-surface" id="courtyardStage">
+        <canvas id="courtyardCanvas" aria-label="Illustrated A-frame chalet, arriving silver SUV, green yard, and two playful dogs"></canvas>
+        <span class="courtyard-caption">A quiet afternoon</span>
+        <!-- The canvas paints the frame and threshold; this independent DOM
+             leaf rotates around its left side, like a real hinged chalet door. -->
+        <button class="front-door" id="frontDoor" type="button" aria-label="Open the chalet front door"></button>
+        <span class="stage-vignette" aria-hidden="true"></span>
+      </div>
+    </div>
+    <footer class="courtyard-footer">
+      <p class="scene-note" id="audioHint">Take your time. There are friends waiting on the other side.</p>
+      <button class="primary-button open-door-button" id="openDoorButton" type="button">OPEN THE DOOR <span aria-hidden="true">↗</span></button>
+    </footer>
+  </main>
+
+  <!-- ================================================ Page 3: Story journey -->
+  <main class="screen memory-screen" id="memoryScreen" aria-hidden="true">
+    <div class="memory-app-shell">
+      <header class="memory-header">
+        <div class="memory-title-block">
+          <p class="memory-eyebrow">Our little story · chapter 02</p>
+          <h1 class="memory-title" lang="my">တံခါးပွင့်သွားပါပြီ! အိမ်ထဲကို ကြိုဆိုပါတယ်... 🚪✨</h1>
+          <p class="memory-subtitle" id="storySubtitle">The front door opens, and a tiny adventure begins.</p>
+        </div>
+        <div class="memory-header-tools">
+          <span class="story-chip memory-pill" id="scenePill">01 · The living room</span>
+          <button class="sound-button" id="memorySoundButton" type="button" data-playing="false" aria-label="Mute music" aria-pressed="false"><span class="sound-dot" aria-hidden="true"></span><span class="sound-label">Sound on</span></button>
+        </div>
+      </header>
+      <section class="memory-story" aria-label="Animated friendship story">
+        <div class="memory-stage-frame">
+          <div class="memory-stage" id="memoryStage">
+            <canvas id="storyCanvas" aria-label="A little animated character walks through a cozy home and onto a fireworks-lit balcony"></canvas>
+            <span class="stage-status" id="stageStatus">THE LIVING ROOM</span>
+            <figure class="memory-photo" id="memoryPhoto" aria-live="polite" aria-label="Friend photo memory">
+              <img id="memoryImage" src="friend.jpg" alt="Friend memory photo 1">
+              <span class="photo-fallback is-visible" id="photoFallback" aria-hidden="true"><span><span class="photo-fallback-icon">♡</span><span class="photo-fallback-label" id="fallbackLabel">Your photo goes here</span></span></span>
+              <figcaption id="photoCaption">A little memory, for you</figcaption>
+            </figure>
+            <h2 class="good-luck-title" id="goodLuckTitle">GOOD LUCK MY FRIEND ✨</h2>
+            <span class="story-stage-gloss" aria-hidden="true"></span>
+          </div>
+        </div>
+        <footer class="memory-controls">
+          <div class="chapter-controls">
+            <span class="chapter-mark" aria-hidden="true" id="chapterIcon">⌂</span>
+            <div class="chapter-copy"><strong id="chapterTitle">A story is unfolding</strong><span id="chapterHint">Watch your little friend find the stairs.</span></div>
+          </div>
+          <div class="story-actions" id="storyActions"><button class="secondary-button" id="skipStoryButton" type="button">SKIP TO FIREWORKS ↓</button></div>
+          <div class="firework-controls" id="fireworkControls" hidden>
+            <button class="touch-button" id="touchButton" type="button" aria-label="Touch to launch the next friendship photo firework"><span class="touch-spark" aria-hidden="true">✦</span><span id="touchButtonLabel">TOUCH</span></button>
+            <span class="firework-progress" id="fireworkProgress" aria-label="0 of 5 photos revealed"><span id="progressLabel">00 / 05</span><span class="progress-dots" id="progressDots" aria-hidden="true"></span></span>
+            <button class="secondary-button" id="replayFireworksButton" type="button" hidden>REPLAY THE MEMORIES ↻</button>
+          </div>
+        </footer>
+      </section>
+
+      <!-- This collapsible, well-named space is intentionally left ready for
+           the next chapter of the keepsake: slider, hearts, and letters. -->
+      <aside class="memory-extension" aria-label="Future memory room features">
+        <details>
+          <summary>A little more room for our memories</summary>
+          <div class="extension-slots">
+            <div class="extension-slot" id="future-photo-slider"><strong>Photo memory slider</strong>Add another favorite moment here.</div>
+            <div class="extension-slot" id="future-heart-particles"><strong>Falling hearts</strong>A place for gentle heart-shaped confetti.</div>
+            <div class="extension-slot" id="future-friendship-letter"><strong>A friendship letter</strong>A home for a personal note or typewriter message.</div>
+          </div>
+        </details>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    /* =====================================================================
+       MEMORY HOUSE — app state, illustration helpers and animation logic.
+       All motion is time-based; no third-party code or art assets are needed.
+       ===================================================================== */
+    (() => {
+      "use strict";
+
+      // One fixed drawing coordinate system keeps every hand-drawn object in
+      // proportion. The surface itself uses the same 1000:620 aspect ratio.
+      const WORLD = { width: 1000, height: 620 };
+      const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const prefersLessMotion = () => REDUCED_MOTION.matches;
+      const $ = (selector) => document.querySelector(selector);
+      const screens = { welcome: $("#welcomeScreen"), courtyard: $("#courtyardScreen"), memory: $("#memoryScreen") };
+      const liveAnnouncement = $("#liveAnnouncement");
+      const audio = $("#backgroundMusic");
+      const door = $("#frontDoor");
+      const enterButton = $("#enterButton");
+      const openDoorButton = $("#openDoorButton");
+      const soundButtons = [$("#courtyardScreen .sound-button"), $("#memorySoundButton")];
+      const storyCanvas = $("#storyCanvas");
+      const courtyardCanvas = $("#courtyardCanvas");
+      const stageStatus = $("#stageStatus");
+      const scenePill = $("#scenePill");
+      const storySubtitle = $("#storySubtitle");
+      const chapterTitle = $("#chapterTitle");
+      const chapterHint = $("#chapterHint");
+      const touchButton = $("#touchButton");
+      const touchButtonLabel = $("#touchButtonLabel");
+      const photoCard = $("#memoryPhoto");
+      const photoImage = $("#memoryImage");
+      const photoFallback = $("#photoFallback");
+      const fallbackLabel = $("#fallbackLabel");
+      const photoCaption = $("#photoCaption");
+      const goodLuckTitle = $("#goodLuckTitle");
+      const fireworkControls = $("#fireworkControls");
+      const storyActions = $("#storyActions");
+      const skipStoryButton = $("#skipStoryButton");
+      const replayFireworksButton = $("#replayFireworksButton");
+      const progressLabel = $("#progressLabel");
+      const progressDots = $("#progressDots");
+      const fireworkProgress = $("#fireworkProgress");
+      const audioHint = $("#audioHint");
+
+      let activeScreen = "welcome";
+      let animationFrame = 0;
+      let pageTwoStartedAt = 0;
+      let doorTransitionStarted = false;
+      let story = {
+        scene: "living", sceneStartedAt: 0,
+        activeFirework: null, photosRevealed: 0, finaleVisible: false,
+        photoCardVisible: false
+      };
+
+      // Scene copy lives together so later edits do not hide inside canvas code.
+      const sceneContent = {
+        living: {
+          name: "01 · The living room", status: "THE LIVING ROOM",
+          subtitle: "A tiny friend made it inside. Follow along to the stairs.",
+          title: "A story is unfolding", hint: "Watch your little friend find the stairs.", icon: "⌂"
+        },
+        lounge: {
+          name: "02 · The upstairs lounge", status: "UPSTAIRS · THE LOUNGE",
+          subtitle: "Upstairs, the light leads somewhere new.",
+          title: "A little further together", hint: "Your friend is crossing the upstairs room.", icon: "☼"
+        },
+        balcony: {
+          name: "03 · The night balcony", status: "THE NIGHT BALCONY",
+          subtitle: "The night is beautiful. Let’s save a few memories in the stars.",
+          title: "Five little memories", hint: "Each spark is a photo, just for you.", icon: "✦"
+        }
+      };
+      const photoFiles = ["friend1.jpg", "friend2.jpg", "friend3.jpg", "friend4.jpg", "friend5.jpg"];
+
+      // HiDPI-aware fit; redraws always use the same logical coordinates.
+      function prepareCanvas(canvas) {
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return null;
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        const pixelWidth = Math.round(rect.width * pixelRatio);
+        const pixelHeight = Math.round(rect.height * pixelRatio);
+        if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+          canvas.width = pixelWidth;
+          canvas.height = pixelHeight;
+        }
+        const context = canvas.getContext("2d", { alpha: false });
+        if (!context) return null;
+        const scale = Math.min(rect.width / WORLD.width, rect.height / WORLD.height);
+        const offsetX = (rect.width - WORLD.width * scale) / 2;
+        const offsetY = (rect.height - WORLD.height * scale) / 2;
+        context.setTransform(pixelRatio * scale, 0, 0, pixelRatio * scale, pixelRatio * offsetX, pixelRatio * offsetY);
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = "high";
+        return context;
+      }
+
+      // Shared, small illustration helpers keep the art crisp and readable.
+      function roundedRect(ctx, x, y, width, height, radius = 12) {
+        const r = Math.min(radius, width / 2, height / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y); ctx.lineTo(x + width - r, y); ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+        ctx.lineTo(x + width, y + height - r); ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+        ctx.lineTo(x + r, y + height); ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+      }
+      function fillRound(ctx, x, y, w, h, r, fill) { roundedRect(ctx, x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); }
+      function strokeRound(ctx, x, y, w, h, r, stroke, width = 2) { roundedRect(ctx, x, y, w, h, r); ctx.strokeStyle = stroke; ctx.lineWidth = width; ctx.stroke(); }
+      function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+      function lerp(a, b, amount) { return a + (b - a) * amount; }
+      function easeOutCubic(value) { const t = clamp(value, 0, 1); return 1 - Math.pow(1 - t, 3); }
+      function sceneClock(now) { return Math.max(0, now - story.sceneStartedAt); }
+
+      // A soft cloud constructed from overlapping, feather-light ellipses.
+      function drawCloud(ctx, x, y, scale = 1, alpha = .8) {
+        ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale); ctx.globalAlpha = alpha;
+        ctx.fillStyle = "rgba(255,255,255,.86)";
+        ctx.beginPath(); ctx.ellipse(0, 8, 43, 15, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-19, 3, 17, 0, Math.PI * 2); ctx.arc(0, -5, 23, 0, Math.PI * 2); ctx.arc(21, 3, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
+      function drawTree(ctx, x, ground, scale, variant = 0) {
+        ctx.save(); ctx.translate(x, ground); ctx.scale(scale, scale);
+        ctx.fillStyle = "#846044"; fillRound(ctx, -5, -71, 11, 73, 5, ctx.fillStyle);
+        const shades = variant ? ["#60966c", "#75a978", "#83b681"] : ["#4f956e", "#65a77a", "#8bb889"];
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath(); ctx.ellipse((i - 1) * 14, -83 - (i % 2) * 9, 27 - i * 2, 32 - i * 2, 0, 0, Math.PI * 2);
+          ctx.fillStyle = shades[i]; ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // ===================================================================
+      // PAGE 2 ART — sunny yard, timber A-frame, silver SUV and two dogs.
+      // ===================================================================
+      function drawHouseSky(ctx, now) {
+        const sky = ctx.createLinearGradient(0, 0, 0, 620);
+        sky.addColorStop(0, "#92c8fa"); sky.addColorStop(.68, "#d5edfc"); sky.addColorStop(1, "#e9f7fb");
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+        const sunHalo = ctx.createRadialGradient(820, 93, 8, 820, 93, 122);
+        sunHalo.addColorStop(0, "rgba(255,238,176,.72)"); sunHalo.addColorStop(1, "rgba(255,238,176,0)");
+        ctx.fillStyle = sunHalo; ctx.fillRect(690, 0, 260, 220);
+        ctx.beginPath(); ctx.arc(820, 92, 29, 0, Math.PI * 2); ctx.fillStyle = "#fff4cf"; ctx.fill();
+        drawCloud(ctx, 140 + Math.sin(now * .00009) * 9, 116, .83, .79);
+        drawCloud(ctx, 726 - Math.sin(now * .00007) * 13, 196, .6, .59);
+        // Soft, low hills keep the chalet as the unmistakable focal point.
+        ctx.fillStyle = "#9acaa0"; ctx.beginPath(); ctx.moveTo(0, 349); ctx.quadraticCurveTo(175, 285, 335, 348); ctx.quadraticCurveTo(542, 404, 762, 326); ctx.quadraticCurveTo(886, 283, 1000, 337); ctx.lineTo(1000, 463); ctx.lineTo(0, 463); ctx.closePath(); ctx.fill();
+        const lawn = ctx.createLinearGradient(0, 395, 0, 620); lawn.addColorStop(0, "#8ac17e"); lawn.addColorStop(.55, "#74b973"); lawn.addColorStop(1, "#5b9a66");
+        ctx.fillStyle = lawn; ctx.fillRect(0, 398, 1000, 222);
+        ctx.globalAlpha = .2; ctx.fillStyle = "#dcf1bf";
+        for (let i = 0; i < 21; i++) { ctx.fillRect(i * 55 + 12, 414 + (i % 3) * 8, 31, 2); }
+        ctx.globalAlpha = 1;
+      }
+
+      function drawChalet(ctx) {
+        // The house silhouette, including a little floating foundation shadow.
+        ctx.save(); ctx.fillStyle = "rgba(64,96,70,.22)"; ctx.beginPath(); ctx.ellipse(500, 443, 249, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        ctx.fillStyle = "#ead0a8"; ctx.strokeStyle = "#fff7e8"; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.moveTo(330, 294); ctx.lineTo(500, 164); ctx.lineTo(670, 294); ctx.lineTo(670, 432); ctx.lineTo(330, 432); ctx.closePath(); ctx.fill(); ctx.stroke();
+        // Subtle wall-panel seams and a gentle warm reflected light.
+        ctx.strokeStyle = "rgba(176,126,86,.16)"; ctx.lineWidth = 1.3;
+        for (const x of [350, 382, 620, 650]) { ctx.beginPath(); ctx.moveTo(x, 303); ctx.lineTo(x, 423); ctx.stroke(); }
+        const wallLight = ctx.createLinearGradient(330, 0, 668, 0); wallLight.addColorStop(0, "rgba(255,255,255,.24)"); wallLight.addColorStop(.5, "rgba(255,255,255,.03)"); wallLight.addColorStop(1, "rgba(133,88,59,.1)");
+        ctx.fillStyle = wallLight; ctx.beginPath(); ctx.moveTo(330, 294); ctx.lineTo(500, 164); ctx.lineTo(670, 294); ctx.lineTo(670, 432); ctx.lineTo(330, 432); ctx.closePath(); ctx.fill();
+
+        // Brown timber roof and the thick white A-frame trim requested.
+        ctx.save(); ctx.lineJoin = "round";
+        ctx.beginPath(); ctx.moveTo(279, 292); ctx.lineTo(500, 93); ctx.lineTo(721, 292); ctx.lineTo(691, 319); ctx.lineTo(500, 153); ctx.lineTo(309, 319); ctx.closePath();
+        const roof = ctx.createLinearGradient(300, 130, 705, 305); roof.addColorStop(0, "#845234"); roof.addColorStop(.45, "#a56a43"); roof.addColorStop(1, "#75462f");
+        ctx.fillStyle = roof; ctx.fill(); ctx.lineWidth = 14; ctx.strokeStyle = "#fff9ee"; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(314, 299); ctx.lineTo(500, 137); ctx.lineTo(686, 299); ctx.lineWidth = 7; ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.stroke();
+        // Tidy metal roof ribs add a little depth without clutter.
+        ctx.strokeStyle = "rgba(68,40,28,.19)"; ctx.lineWidth = 2;
+        for (let i = 0; i < 7; i++) { const t = (i + 1) / 8; ctx.beginPath(); ctx.moveTo(500, 107 + t * 29); ctx.lineTo(300 + i * 52, 289); ctx.stroke(); }
+        ctx.restore();
+
+        // A generous triangular upper window with individual blue glass panes.
+        ctx.save();
+        ctx.beginPath(); ctx.moveTo(414, 279); ctx.lineTo(500, 196); ctx.lineTo(586, 279); ctx.closePath();
+        const glass = ctx.createLinearGradient(429, 202, 572, 283); glass.addColorStop(0, "#b5e8fa"); glass.addColorStop(.52, "#71b8dc"); glass.addColorStop(1, "#416f9c");
+        ctx.fillStyle = glass; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = "#fffaf0"; ctx.stroke();
+        ctx.save(); ctx.clip();
+        ctx.fillStyle = "rgba(255,255,255,.22)"; ctx.beginPath(); ctx.moveTo(430, 270); ctx.lineTo(484, 206); ctx.lineTo(470, 271); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(500, 198); ctx.lineTo(500, 282); ctx.moveTo(447, 252); ctx.lineTo(553, 252); ctx.stroke();
+        ctx.restore(); ctx.restore();
+
+        // Matching side windows with a sunlit reflected panel.
+        for (const x of [358, 603]) {
+          fillRound(ctx, x - 3, 326, 43, 48, 7, "#f8eed9");
+          fillRound(ctx, x, 329, 37, 41, 5, "#80bfdb");
+          ctx.strokeStyle = "rgba(255,255,255,.94)"; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(x + 18, 330); ctx.lineTo(x + 18, 369); ctx.moveTo(x + 1, 349); ctx.lineTo(x + 36, 349); ctx.stroke();
+          ctx.fillStyle = "rgba(255,255,255,.25)"; ctx.beginPath(); ctx.moveTo(x + 3, 367); ctx.lineTo(x + 29, 330); ctx.lineTo(x + 29, 338); ctx.lineTo(x + 8, 368); ctx.closePath(); ctx.fill();
+        }
+
+        // Doorframe (the swinging timber door is an aligned DOM element).
+        fillRound(ctx, 462, 349, 76, 89, 7, "#fff5df");
+        fillRound(ctx, 468, 354, 64, 84, 4, "#653e2b");
+        // Roofed porch, boardwalk and little side railings.
+        const deck = ctx.createLinearGradient(0, 425, 0, 454); deck.addColorStop(0, "#d69a5f"); deck.addColorStop(1, "#a9663d");
+        ctx.fillStyle = deck; ctx.fillRect(337, 430, 326, 18); ctx.strokeStyle = "#fff1da"; ctx.lineWidth = 3; ctx.strokeRect(337, 430, 326, 18);
+        ctx.fillStyle = "#bf8250"; ctx.fillRect(359, 398, 108, 7); ctx.fillRect(533, 398, 108, 7); ctx.fillRect(359, 422, 108, 6); ctx.fillRect(533, 422, 108, 6);
+        ctx.strokeStyle = "#82543a"; ctx.lineWidth = 4;
+        for (const x of [365, 389, 413, 437, 461, 539, 563, 587, 611, 635]) { ctx.beginPath(); ctx.moveTo(x, 402); ctx.lineTo(x, 425); ctx.stroke(); }
+        for (const x of [357, 462, 537, 643]) { fillRound(ctx, x - 3, 391, 7, 43, 3, "#99633f"); }
+        // Central steps lead neatly onto the bright lawn.
+        ctx.fillStyle = "#d49a63"; ctx.strokeStyle = "#fff1da"; ctx.lineWidth = 2;
+        for (let i = 0; i < 4; i++) { const y = 448 + i * 13; const half = 34 + i * 12; ctx.fillRect(500 - half, y, half * 2, 13); ctx.strokeRect(500 - half, y, half * 2, 13); }
+        // A welcome planter on each side of the little step.
+        drawFlowerPlanter(ctx, 419, 446); drawFlowerPlanter(ctx, 580, 446);
+      }
+
+      function drawFlowerPlanter(ctx, x, ground) {
+        ctx.save(); ctx.translate(x, ground);
+        fillRound(ctx, -13, -16, 26, 17, 4, "#c77d56"); ctx.strokeStyle = "#f2bc84"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-12, -11); ctx.lineTo(12, -11); ctx.stroke();
+        for (let i = 0; i < 3; i++) { ctx.strokeStyle = "#548a5b"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo((i - 1) * 5, -15); ctx.lineTo((i - 1) * 7, -29 - (i % 2) * 3); ctx.stroke(); }
+        for (const [dx, dy, color] of [[-7,-29,"#e99488"],[1,-34,"#ffd36c"],[8,-26,"#ec86a4"],[0,-24,"#fff0bb"]]) { ctx.beginPath(); ctx.arc(dx, dy, 4, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); }
+        ctx.restore();
+      }
+
+      function drawCar(ctx, x, y, now) {
+        const bounce = prefersLessMotion() ? 0 : Math.sin(now * .011) * .6;
+        ctx.save(); ctx.translate(x, y + bounce);
+        // Gliding shadow anchors the moving SUV to the grass.
+        ctx.globalAlpha = .2; ctx.fillStyle = "#294b57"; ctx.beginPath(); ctx.ellipse(104, 3, 106, 13, 0, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+        // Lower sill and aerodynamic body.
+        ctx.beginPath(); ctx.moveTo(9, -29); ctx.quadraticCurveTo(13, -48, 39, -54); ctx.lineTo(70, -83); ctx.quadraticCurveTo(82, -94, 100, -94); ctx.lineTo(143, -92); ctx.quadraticCurveTo(159, -89, 172, -71); ctx.lineTo(190, -58); ctx.quadraticCurveTo(202, -53, 205, -41); ctx.lineTo(203, -26); ctx.quadraticCurveTo(201, -18, 191, -17); ctx.lineTo(22, -17); ctx.quadraticCurveTo(6, -18, 9, -29); ctx.closePath();
+        const paint = ctx.createLinearGradient(10, -90, 30, -15); paint.addColorStop(0, "#f5f8f8"); paint.addColorStop(.33, "#cbd4d9"); paint.addColorStop(.7, "#e9eeee"); paint.addColorStop(1, "#9baab1");
+        ctx.fillStyle = paint; ctx.fill(); ctx.strokeStyle = "#84949b"; ctx.lineWidth = 2; ctx.stroke();
+        // Side windows, slim pillars and reflections.
+        ctx.beginPath(); ctx.moveTo(45, -56); ctx.lineTo(76, -84); ctx.quadraticCurveTo(82, -88, 96, -88); ctx.lineTo(101, -57); ctx.closePath(); ctx.fillStyle = "#42647a"; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(106, -88); ctx.lineTo(142, -87); ctx.quadraticCurveTo(151, -84, 162, -63); ctx.lineTo(106, -58); ctx.closePath(); ctx.fillStyle = "#557b90"; ctx.fill();
+        ctx.fillStyle = "rgba(235,249,255,.44)"; ctx.beginPath(); ctx.moveTo(52, -59); ctx.lineTo(79, -83); ctx.lineTo(85, -82); ctx.lineTo(66, -60); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = "rgba(248,252,252,.95)"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(102, -88); ctx.lineTo(104, -19); ctx.stroke();
+        ctx.strokeStyle = "rgba(104,120,127,.75)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(58, -29); ctx.lineTo(157, -29); ctx.stroke();
+        // Quiet silver roof rails, front grille and headlights.
+        ctx.strokeStyle = "#7b8a91"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(78, -96); ctx.lineTo(142, -94); ctx.stroke();
+        fillRound(ctx, 6, -48, 12, 9, 3, "#f9f1d9"); fillRound(ctx, 189, -49, 10, 8, 3, "#e78378");
+        fillRound(ctx, 7, -34, 4, 9, 2, "#69787d"); fillRound(ctx, 194, -33, 4, 9, 2, "#69787d");
+        // Slow-rotating wheels; subtle enough for a parked car.
+        for (const wx of [51, 158]) {
+          ctx.beginPath(); ctx.arc(wx, -18, 19, 0, Math.PI * 2); ctx.fillStyle = "#263642"; ctx.fill();
+          ctx.beginPath(); ctx.arc(wx, -18, 10, 0, Math.PI * 2); ctx.fillStyle = "#c3cbd0"; ctx.fill();
+          ctx.beginPath(); ctx.arc(wx, -18, 4, 0, Math.PI * 2); ctx.fillStyle = "#829199"; ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // Small original dog characters drawn as soft shapes, swinging limbs and
+      // separately animated, gently wagging tails—no sprites or libraries.
+      function drawDog(ctx, x, y, size, coat, undercoat, phase, now) {
+        const motion = prefersLessMotion() ? .12 : 1;
+        const gait = Math.sin(now * .014 * motion + phase);
+        const bounce = Math.abs(Math.sin(now * .014 * motion + phase)) * 2.4;
+        const wag = Math.sin(now * .026 * motion + phase) * .48;
+        ctx.save(); ctx.translate(x, y - bounce); ctx.scale(size, size);
+        ctx.fillStyle = "rgba(36,58,44,.18)"; ctx.beginPath(); ctx.ellipse(2, 2, 31, 6, 0, 0, Math.PI * 2); ctx.fill();
+        // Tail attaches before body and swings independently.
+        ctx.save(); ctx.translate(-25, -23); ctx.rotate(-.55 + wag); ctx.strokeStyle = coat; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-11, -13, -17, -5); ctx.stroke(); ctx.restore();
+        // Animated paws and floppy ears.
+        for (const leg of [-18, 6, 20]) {
+          const amount = Math.sin(now * .016 * motion + phase + leg * .13) * 5;
+          ctx.strokeStyle = undercoat; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(leg, -14); ctx.lineTo(leg + amount, -2); ctx.lineTo(leg + amount + 2, 0); ctx.stroke();
+        }
+        ctx.fillStyle = coat; ctx.beginPath(); ctx.ellipse(0, -26, 31, 17, -.04, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = undercoat; ctx.beginPath(); ctx.ellipse(-7, -20, 18, 8, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.save(); ctx.translate(20, -35 + bounce * .13); ctx.rotate(Math.sin(now * .009 * motion + phase) * .045);
+        ctx.fillStyle = coat; ctx.beginPath(); ctx.ellipse(0, 0, 19, 17, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = coat; ctx.beginPath(); ctx.ellipse(-11, -6, 7, 13, -.38, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = undercoat; ctx.beginPath(); ctx.ellipse(13, 7, 9, 6, .06, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#34332e"; ctx.beginPath(); ctx.arc(6, -3, 2.3, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.ellipse(20, 6, 3, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(232,125,107,.65)"; ctx.beginPath(); ctx.arc(12, 5, 3.1, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        ctx.strokeStyle = "#f3cc6e"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(1, -29, 13, .25, 2.6); ctx.stroke();
+        ctx.beginPath(); ctx.arc(2, -17, 2.3, 0, Math.PI * 2); ctx.fillStyle = "#dd735e"; ctx.fill();
+        ctx.restore();
+      }
+
+      function drawCourtyard(now) {
+        const ctx = prepareCanvas(courtyardCanvas); if (!ctx) return;
+        ctx.clearRect(0, 0, WORLD.width, WORLD.height);
+        drawHouseSky(ctx, now);
+        // Garden flowers and stepping stones sit at the edges of the yard.
+        drawTree(ctx, 74, 413, 1.08, 1); drawTree(ctx, 907, 411, .95, 0);
+        for (let i = 0; i < 13; i++) {
+          const x = 318 + i * 31, y = 479 + Math.sin(i * 2.4) * 8;
+          ctx.fillStyle = i % 2 ? "rgba(255,241,178,.76)" : "rgba(249,180,176,.76)";
+          ctx.beginPath(); ctx.arc(x, y, i % 3 ? 3 : 4, 0, Math.PI * 2); ctx.fill();
+        }
+        // The car eases in from outside the left boundary and settles beside
+        // the house, timed from the instant the courtyard page is entered.
+        const parking = easeOutCubic((now - pageTwoStartedAt) / (prefersLessMotion() ? 250 : 2200));
+        const carX = lerp(-218, 84, parking);
+        drawCar(ctx, carX, 492, now);
+        drawChalet(ctx);
+        const loop = now * (prefersLessMotion() ? .00008 : .00024);
+        drawDog(ctx, 789 + (Math.sin(loop + .5) * .5 + .5) * 130, 498, .92, "#d89a49", "#f4d9aa", .4, now);
+        drawDog(ctx, 812 + (Math.sin(loop + 3.4) * .5 + .5) * 125, 539, .76, "#86553b", "#d8b08c", 3.3, now);
+        // Little bits of sunlight float above the grass on a longer rhythm.
+        for (let i = 0; i < 5; i++) {
+          const sx = 353 + i * 74; const sy = 467 + Math.sin(now * .001 + i * 1.9) * 5;
+          ctx.globalAlpha = .4 + .3 * Math.sin(now * .0014 + i); ctx.fillStyle = "#fff6d4";
+          ctx.beginPath(); ctx.arc(sx, sy, 2.2, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // ===================================================================
+      // PAGE 3 SCENE 3A — warm ground-floor room and eight gentle stair steps.
+      // ===================================================================
+      function drawLivingRoom(ctx) {
+        const wall = ctx.createLinearGradient(0, 0, 1000, 450); wall.addColorStop(0, "#fff4e3"); wall.addColorStop(.65, "#f7e5cf"); wall.addColorStop(1, "#eedac6");
+        ctx.fillStyle = wall; ctx.fillRect(0, 0, 1000, 620);
+        // Noon light comes in softly through the big window.
+        ctx.fillStyle = "rgba(255,245,212,.24)"; ctx.beginPath(); ctx.moveTo(125, 155); ctx.lineTo(456, 440); ctx.lineTo(150, 441); ctx.closePath(); ctx.fill();
+        fillRound(ctx, 115, 105, 202, 170, 15, "#fdf5e8"); fillRound(ctx, 124, 114, 184, 152, 8, "#96cee0");
+        ctx.fillStyle = "rgba(255,255,255,.83)"; ctx.fillRect(211, 115, 9, 150); ctx.fillRect(128, 184, 177, 8);
+        ctx.fillStyle = "rgba(255,246,217,.47)"; ctx.beginPath(); ctx.moveTo(128, 258); ctx.lineTo(257, 117); ctx.lineTo(275, 117); ctx.lineTo(147, 258); ctx.closePath(); ctx.fill();
+        // Wood floor begins at a long, quiet baseboard.
+        ctx.fillStyle = "#eed4b6"; ctx.fillRect(0, 447, 1000, 173); ctx.fillStyle = "#c8986c"; ctx.fillRect(0, 438, 1000, 11);
+        ctx.strokeStyle = "rgba(139,94,68,.12)"; ctx.lineWidth = 1;
+        for (let x = 42; x < 1000; x += 100) { ctx.beginPath(); ctx.moveTo(x, 450); ctx.lineTo(x - 9, 620); ctx.stroke(); }
+        ctx.strokeStyle = "rgba(255,255,255,.25)"; for (let y = 485; y < 620; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1000, y); ctx.stroke(); }
+        // A cozy sofa and a rounded, muted-pink rug.
+        ctx.fillStyle = "rgba(125,77,72,.15)"; ctx.beginPath(); ctx.ellipse(313, 493, 193, 28, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#d88c85"; ctx.beginPath(); ctx.ellipse(310, 491, 183, 31, 0, 0, Math.PI * 2); ctx.fill();
+        fillRound(ctx, 126, 349, 253, 92, 26, "#c77a73"); fillRound(ctx, 144, 318, 217, 91, 25, "#dc958a");
+        fillRound(ctx, 153, 351, 92, 47, 16, "#e8b1a1"); fillRound(ctx, 261, 351, 89, 47, 16, "#dfa092");
+        fillRound(ctx, 135, 411, 31, 57, 13, "#aa655e"); fillRound(ctx, 339, 411, 31, 57, 13, "#aa655e");
+        // A framed print and a plant make the room feel lived in.
+        fillRound(ctx, 388, 140, 111, 94, 7, "#fff9ed"); strokeRound(ctx, 388, 140, 111, 94, 7, "#c69468", 4);
+        ctx.beginPath(); ctx.moveTo(408, 217); ctx.lineTo(440, 166); ctx.lineTo(461, 197); ctx.lineTo(478, 178); ctx.lineTo(490, 217); ctx.closePath(); ctx.fillStyle = "#8dbba6"; ctx.fill();
+        ctx.fillStyle = "#f7cf8e"; ctx.beginPath(); ctx.arc(464, 164, 10, 0, Math.PI * 2); ctx.fill();
+        drawRoomPlant(ctx, 91, 453);
+        // A wide timber staircase is drawn as distinct risers, climbing right.
+        ctx.save(); ctx.lineJoin = "round";
+        for (let i = 0; i < 8; i++) {
+          const x = 552 + i * 31, y = 458 - i * 26;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 58, y); ctx.lineTo(x + 58, y + 27); ctx.lineTo(x, y + 27); ctx.closePath();
+          ctx.fillStyle = i % 2 ? "#b97c50" : "#c58a5a"; ctx.fill(); ctx.strokeStyle = "rgba(255,236,203,.55)"; ctx.lineWidth = 2; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x + 1, y); ctx.lineTo(x + 58, y); ctx.strokeStyle = "#e3b47a"; ctx.lineWidth = 4; ctx.stroke();
+        }
+        // A bannister follows the upward diagonal with small balusters.
+        ctx.strokeStyle = "#8f613f"; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(565, 405); ctx.lineTo(815, 211); ctx.stroke();
+        ctx.strokeStyle = "#d09a67"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(565, 399); ctx.lineTo(815, 205); ctx.stroke();
+        for (let i = 0; i < 9; i++) { const x = 580 + i * 27; const y = 383 - i * 21; ctx.strokeStyle = "#9b6a46"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 36); ctx.stroke(); }
+        // The upper landing is visible in the same room, like an inviting exit.
+        ctx.fillStyle = "#b8774b"; ctx.fillRect(794, 228, 206, 17); ctx.fillStyle = "#dba875"; ctx.fillRect(794, 220, 206, 9);
+        ctx.restore();
+        // Warm ceiling pendant.
+        ctx.strokeStyle = "rgba(155,111,81,.54)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(516, 0); ctx.lineTo(516, 77); ctx.stroke();
+        ctx.fillStyle = "#fff1cc"; ctx.beginPath(); ctx.ellipse(516, 86, 32, 11, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(255,222,154,.17)"; ctx.beginPath(); ctx.moveTo(493, 90); ctx.lineTo(420, 355); ctx.lineTo(612, 355); ctx.closePath(); ctx.fill();
+      }
+
+      function drawRoomPlant(ctx, x, floor) {
+        ctx.save(); ctx.translate(x, floor); fillRound(ctx, -22, -46, 45, 42, 7, "#c17c57"); ctx.strokeStyle = "#f1bd8d"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-20, -37); ctx.lineTo(20, -37); ctx.stroke();
+        for (let i = 0; i < 6; i++) {
+          const angle = -1.35 + i * .54; ctx.save(); ctx.translate(0, -44); ctx.rotate(angle);
+          ctx.fillStyle = i % 2 ? "#6d9c70" : "#7fa978"; ctx.beginPath(); ctx.ellipse(0, -21 - (i % 2) * 4, 7, 23, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        }
+        ctx.restore();
+      }
+
+      function drawCharacter(ctx, x, ground, now, walking, facing = 1, size = 1) {
+        const movement = prefersLessMotion() ? .22 : 1;
+        const gait = walking ? Math.sin(now * .013 * movement) : 0;
+        const bob = walking ? Math.abs(gait) * 2.3 : Math.sin(now * .002) * .9;
+        ctx.save(); ctx.translate(x, ground - bob); ctx.scale(facing * size, size);
+        // Little soft shadow; its width narrows a touch as the character climbs.
+        ctx.globalAlpha = .15; ctx.fillStyle = "#684d41"; ctx.beginPath(); ctx.ellipse(0, 2, 19, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+        // Boots and stepping legs.
+        ctx.strokeStyle = "#6a5345"; ctx.lineWidth = 7; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(-6, -26); ctx.lineTo(-7 + gait * 8, -10); ctx.lineTo(-11 + gait * 8, -4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(6, -26); ctx.lineTo(7 - gait * 8, -10); ctx.lineTo(12 - gait * 8, -4); ctx.stroke();
+        ctx.strokeStyle = "#3d454d"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-13 + gait * 8, -4); ctx.lineTo(-5 + gait * 8, -4); ctx.moveTo(9 - gait * 8, -4); ctx.lineTo(17 - gait * 8, -4); ctx.stroke();
+        // Comfy blue-green jacket and gently alternating arms.
+        ctx.fillStyle = "#57968e"; ctx.beginPath(); ctx.moveTo(-13, -59); ctx.quadraticCurveTo(-17, -60, -17, -50); ctx.lineTo(-12, -26); ctx.quadraticCurveTo(0, -21, 13, -27); ctx.lineTo(16, -51); ctx.quadraticCurveTo(13, -60, 7, -58); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = "#efc39d"; ctx.lineWidth = 5.5;
+        ctx.beginPath(); ctx.moveTo(-13, -51); ctx.lineTo(-19 - gait * 4, -37 + gait * 2); ctx.lineTo(-18 - gait * 5, -33 + gait * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(12, -51); ctx.lineTo(19 + gait * 4, -38 - gait * 2); ctx.lineTo(18 + gait * 5, -34 - gait * 2); ctx.stroke();
+        // Round face, tidy fringe, bright eyes and an unmistakable smile.
+        ctx.fillStyle = "#f0c29c"; ctx.beginPath(); ctx.arc(0, -73, 14.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#584442"; ctx.beginPath(); ctx.arc(0, -78, 15, Math.PI, Math.PI * 2); ctx.lineTo(13, -72); ctx.quadraticCurveTo(5, -76, 0, -74); ctx.quadraticCurveTo(-7, -71, -13, -73); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#3d3334"; ctx.beginPath(); ctx.arc(-5, -72, 1.5, 0, Math.PI * 2); ctx.arc(5, -72, 1.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#ac695e"; ctx.lineWidth = 1.7; ctx.beginPath(); ctx.arc(0, -68, 4, .23, Math.PI - .23); ctx.stroke();
+        ctx.fillStyle = "#e28c7c"; ctx.beginPath(); ctx.arc(-9, -68, 3, 0, Math.PI * 2); ctx.arc(9, -68, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
+      function drawLivingScene(now) {
+        const ctx = prepareCanvas(storyCanvas); if (!ctx) return;
+        ctx.clearRect(0, 0, WORLD.width, WORLD.height); drawLivingRoom(ctx);
+        const elapsed = sceneClock(now);
+        let x, y, walking = true;
+        if (elapsed < 4150) { const p = easeOutCubic(elapsed / 4150); x = lerp(-38, 555, p); y = 463; }
+        else { const climb = easeOutCubic((elapsed - 4150) / 2450); x = lerp(555, 775, climb); y = lerp(463, 270, climb); walking = elapsed < 6700; }
+        drawCharacter(ctx, x, y, now, walking, 1, .91);
+        // A tiny glowing breadcrumb gently points along the upcoming staircase.
+        const pulse = .48 + Math.sin(now * .005) * .12;
+        ctx.globalAlpha = pulse; ctx.fillStyle = "#ffdf9a"; ctx.shadowColor = "#ffcf81"; ctx.shadowBlur = 18;
+        ctx.beginPath(); ctx.arc(562 + (Math.sin(now * .0013) * 4), 447, 4, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+      }
+
+      // ===================================================================
+      // PAGE 3 SCENE 3B — modern lounge, screen, sofa and opening balcony door.
+      // ===================================================================
+      function drawUpstairsRoom(ctx, elapsed) {
+        const wall = ctx.createLinearGradient(0, 0, 950, 500); wall.addColorStop(0, "#e7e7ef"); wall.addColorStop(.54, "#e6dce7"); wall.addColorStop(1, "#f3cbb6");
+        ctx.fillStyle = wall; ctx.fillRect(0, 0, 1000, 620);
+        // Cool city-window light on the left.
+        fillRound(ctx, 82, 84, 236, 204, 16, "#fff6e9"); fillRound(ctx, 91, 93, 218, 185, 8, "#879db8");
+        const view = ctx.createLinearGradient(92, 105, 305, 271); view.addColorStop(0, "#8396b3"); view.addColorStop(.55, "#d29c9c"); view.addColorStop(1, "#f4d4af");
+        fillRound(ctx, 93, 96, 214, 177, 7, view);
+        ctx.fillStyle = "rgba(255,255,255,.64)"; ctx.fillRect(195, 97, 7, 178); ctx.fillRect(95, 183, 210, 7);
+        // First stars are beginning to appear beyond the glass.
+        for (let i = 0; i < 5; i++) { ctx.fillStyle = `rgba(255,245,225,${.52 + .18 * Math.sin(elapsed * .003 + i)})`; ctx.beginPath(); ctx.arc(117 + i * 35, 121 + (i % 3) * 28, 2, 0, Math.PI * 2); ctx.fill(); }
+        ctx.fillStyle = "#f2e6e0"; ctx.fillRect(0, 439, 1000, 11); ctx.fillStyle = "#d5b8a6"; ctx.fillRect(0, 450, 1000, 170);
+        ctx.strokeStyle = "rgba(134,97,93,.13)"; ctx.lineWidth = 1;
+        for (let x = 0; x < 1000; x += 90) { ctx.beginPath(); ctx.moveTo(x, 451); ctx.lineTo(x + 15, 620); ctx.stroke(); }
+        // Theatre table and muted plum sofa.
+        ctx.fillStyle = "rgba(64,57,76,.12)"; ctx.beginPath(); ctx.ellipse(447, 501, 190, 25, 0, 0, Math.PI * 2); ctx.fill();
+        fillRound(ctx, 217, 377, 233, 78, 24, "#8a7488"); fillRound(ctx, 234, 350, 198, 72, 21, "#a58ca3");
+        fillRound(ctx, 246, 364, 77, 42, 13, "#c4a8ba"); fillRound(ctx, 335, 364, 76, 42, 13, "#b99aae");
+        fillRound(ctx, 233, 438, 26, 40, 10, "#775f75"); fillRound(ctx, 413, 438, 26, 40, 10, "#775f75");
+        // Floating media console and a perfectly clear TV picture.
+        fillRound(ctx, 419, 176, 247, 159, 16, "#403d50"); fillRound(ctx, 429, 186, 227, 137, 9, "#222b43");
+        const tv = ctx.createLinearGradient(430, 191, 650, 321); tv.addColorStop(0, "#404c72"); tv.addColorStop(.5, "#6a4d78"); tv.addColorStop(1, "#bd7c78");
+        fillRound(ctx, 431, 188, 223, 133, 7, tv);
+        // A little moonlit TV illustration: silhouette hills and a round moon.
+        ctx.fillStyle = "#f4d9a8"; ctx.beginPath(); ctx.arc(598, 229, 18, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#69738c"; ctx.beginPath(); ctx.moveTo(434, 298); ctx.quadraticCurveTo(478, 246, 511, 278); ctx.quadraticCurveTo(552, 230, 588, 295); ctx.quadraticCurveTo(620, 257, 651, 285); ctx.lineTo(651, 321); ctx.lineTo(434, 321); ctx.closePath(); ctx.fill();
+        fillRound(ctx, 437, 337, 211, 14, 6, "#b48f77"); fillRound(ctx, 457, 350, 12, 41, 4, "#936f60"); fillRound(ctx, 617, 350, 12, 41, 4, "#936f60");
+        // Small leafy plant and glowing floor lantern by the balcony exit.
+        drawRoomPlant(ctx, 714, 448);
+        ctx.globalAlpha = .56; ctx.fillStyle = "#ffd49c"; ctx.shadowColor = "#ffc37e"; ctx.shadowBlur = 22; ctx.beginPath(); ctx.arc(686, 415, 21, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+        fillRound(ctx, 669, 412, 33, 36, 11, "#aa776a"); ctx.strokeStyle = "#f7d49f"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(678, 428); ctx.quadraticCurveTo(685, 416, 693, 428); ctx.stroke();
+        // Exterior becomes gold and lilac beyond a full-height glass opening.
+        const doorwayX = 782, doorwayY = 88, doorwayW = 140, doorwayH = 362;
+        ctx.fillStyle = "rgba(155,147,167,.22)"; ctx.fillRect(doorwayX - 18, doorwayY - 20, doorwayW + 42, doorwayH + 32);
+        const night = ctx.createLinearGradient(0, doorwayY, 0, doorwayY + doorwayH); night.addColorStop(0, "#525a80"); night.addColorStop(1, "#f1b48f");
+        fillRound(ctx, doorwayX, doorwayY, doorwayW, doorwayH, 7, night);
+        ctx.beginPath(); ctx.arc(879, 154, 26, 0, Math.PI * 2); ctx.fillStyle = "#fce0b7"; ctx.fill();
+        ctx.fillStyle = "#6c6582"; ctx.beginPath(); ctx.moveTo(782, 379); ctx.lineTo(840, 320); ctx.lineTo(898, 369); ctx.lineTo(922, 349); ctx.lineTo(922, 438); ctx.lineTo(782, 438); ctx.closePath(); ctx.fill();
+        // Draw the door leaf pivoted at the left jamb: its projected width
+        // shrinks as it opens, a lightweight canvas version of perspective.
+        const opening = easeOutCubic((elapsed - 3620) / 900);
+        ctx.save(); ctx.translate(doorwayX, doorwayY); ctx.scale(Math.max(.075, Math.cos(opening * 1.18)), 1);
+        const balconyDoor = ctx.createLinearGradient(0, 0, 130, 0); balconyDoor.addColorStop(0, "#bb7c52"); balconyDoor.addColorStop(.45, "#d8a16f"); balconyDoor.addColorStop(1, "#a36a4c");
+        fillRound(ctx, 2, 0, doorwayW - 4, doorwayH, 5, balconyDoor); ctx.strokeStyle = "#fff3df"; ctx.lineWidth = 7; ctx.strokeRect(3, 3, doorwayW - 6, doorwayH - 6);
+        ctx.strokeStyle = "rgba(255,245,220,.66)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(70, 9); ctx.lineTo(70, 355); ctx.stroke();
+        fillRound(ctx, 109, 190, 8, 18, 4, "#f7dda0"); ctx.restore();
+
+      }
+
+      function drawLoungeScene(now) {
+        const ctx = prepareCanvas(storyCanvas); if (!ctx) return;
+        ctx.clearRect(0, 0, WORLD.width, WORLD.height);
+        const elapsed = sceneClock(now); drawUpstairsRoom(ctx, elapsed);
+        // He walks across the lounge, pauses at the outside door, and steps
+        // through only after its timber leaf has visibly begun to swing open.
+        let x, walking;
+        if (elapsed < 3620) { x = lerp(35, 754, easeOutCubic(elapsed / 3620)); walking = true; }
+        else if (elapsed < 4500) { x = 754; walking = false; }
+        else { x = lerp(754, 925, easeOutCubic((elapsed - 4500) / 1050)); walking = elapsed < 5500; }
+        drawCharacter(ctx, x, 480, now, walking, 1, .93);
+        const light = .18 + .14 * Math.sin(now * .003);
+        ctx.globalAlpha = light; ctx.fillStyle = "#ffe4ac"; ctx.shadowColor = "#ffc890"; ctx.shadowBlur = 22;
+        ctx.beginPath(); ctx.arc(748, 466, 5, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+      }
+
+      // ===================================================================
+      // PAGE 3 SCENE 3C — moonlit balcony and hand-simulated fireworks.
+      // ===================================================================
+      const NIGHT_STARS = Array.from({ length: 106 }, (_, i) => ({
+        x: (i * 163.73 + 23) % 1000, y: 16 + ((i * 89.19 + 31) % 365),
+        radius: .65 + (i % 4) * .38, phase: i * 1.37
+      }));
+      const FIREWORK_COLORS = ["#ffdf82", "#ff7da7", "#76e7f7", "#ffb65f", "#c7a2ff", "#fff3d0", "#ff84dd"];
+      const LAUNCHER_X = [248, 359, 470, 581, 692];
+
+      function drawNightBalcony(ctx, now) {
+        const sky = ctx.createLinearGradient(0, 0, 0, 620);
+        sky.addColorStop(0, "#11172e"); sky.addColorStop(.43, "#232448"); sky.addColorStop(.74, "#4a355a"); sky.addColorStop(1, "#875268");
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+        // Moon haze, fine pinprick stars, and a softly pulsing full moon.
+        const moonX = 755, moonY = 144;
+        const moonAura = ctx.createRadialGradient(moonX, moonY, 19, moonX, moonY, 174);
+        moonAura.addColorStop(0, "rgba(255,230,179,.27)"); moonAura.addColorStop(.32, "rgba(206,191,255,.105)"); moonAura.addColorStop(1, "rgba(190,174,255,0)");
+        ctx.fillStyle = moonAura; ctx.fillRect(moonX - 180, moonY - 180, 360, 360);
+        for (const star of NIGHT_STARS) {
+          const amplitude = prefersLessMotion() ? .08 : .24;
+          const alpha = .46 + amplitude * (.5 + .5 * Math.sin(now * .0015 + star.phase));
+          ctx.globalAlpha = alpha; ctx.fillStyle = star.phase % 3 < 1 ? "#fff1dc" : "#dce5ff";
+          ctx.beginPath(); ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2); ctx.fill();
+          if (star.radius > 1.5) {
+            ctx.globalAlpha = alpha * .58; ctx.strokeStyle = "#fff0dc"; ctx.lineWidth = .8;
+            ctx.beginPath(); ctx.moveTo(star.x - 3, star.y); ctx.lineTo(star.x + 3, star.y); ctx.moveTo(star.x, star.y - 3); ctx.lineTo(star.x, star.y + 3); ctx.stroke();
+          }
+        }
+        ctx.globalAlpha = 1;
+        const glowPulse = prefersLessMotion() ? 0 : Math.sin(now * .0014) * 2;
+        const moon = ctx.createRadialGradient(moonX - 19, moonY - 22, 4, moonX, moonY, 72 + glowPulse);
+        moon.addColorStop(0, "#fffef3"); moon.addColorStop(.72, "#fff2cf"); moon.addColorStop(1, "#e3c6b0");
+        ctx.shadowColor = "#e4d3ff"; ctx.shadowBlur = 36;
+        ctx.beginPath(); ctx.arc(moonX, moonY, 63 + glowPulse * .25, 0, Math.PI * 2); ctx.fillStyle = moon; ctx.fill(); ctx.shadowBlur = 0;
+        // Delicate lunar maria keep the moon from reading as a flat circle.
+        ctx.globalAlpha = .14; ctx.fillStyle = "#ad9ca5";
+        for (const [x, y, r] of [[-21,-16,12],[17,16,17],[25,-24,7],[-29,26,7]]) { ctx.beginPath(); ctx.arc(moonX + x, moonY + y, r, 0, Math.PI * 2); ctx.fill(); }
+        ctx.globalAlpha = 1;
+        // Distant, pastel-lit skyline below the sky.
+        ctx.fillStyle = "#27263d";
+        const skyline = [[0,345,68,122],[53,366,78,99],[118,332,51,132],[166,356,86,108],[237,340,67,124],[291,370,83,94],[365,344,68,120],[421,362,95,102],[506,338,78,126],[574,366,64,98],[631,346,80,118],[704,365,88,99],[782,337,78,127],[846,361,67,103],[909,342,91,122],[974,365,56,99]];
+        for (const [x,y,w,h] of skyline) {
+          fillRound(ctx, x, y, w, h, 5, "#27263d");
+          for (let wx = x + 12; wx < x + w - 6; wx += 22) for (let wy = y + 18; wy < y + h - 10; wy += 27) {
+            ctx.globalAlpha = .2 + ((Math.round(wx + wy) % 5) * .07); ctx.fillStyle = "#ffdc9c"; ctx.fillRect(wx, wy, 5, 8);
+          }
+        }
+        ctx.globalAlpha = 1;
+        // Balcony rail, warm floorboards and a few old-fashioned globe lights.
+        ctx.fillStyle = "#30283b"; ctx.fillRect(0, 386, 1000, 14);
+        ctx.fillStyle = "#6d4350"; ctx.fillRect(0, 398, 1000, 9);
+        ctx.fillStyle = "#211d30"; ctx.fillRect(0, 407, 1000, 60);
+        ctx.strokeStyle = "rgba(231,180,165,.78)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(0, 461); ctx.lineTo(1000, 461); ctx.stroke();
+        ctx.strokeStyle = "#513549"; ctx.lineWidth = 4;
+        for (let x = 34; x < 1000; x += 49) { ctx.beginPath(); ctx.moveTo(x, 403); ctx.lineTo(x, 462); ctx.stroke(); }
+        // String-light cable sweeps once around the balcony edge.
+        ctx.strokeStyle = "rgba(254,215,164,.5)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(12, 411); ctx.quadraticCurveTo(490, 447, 985, 411); ctx.stroke();
+        for (let i = 0; i < 19; i++) {
+          const x = 18 + i * 53, y = 411 + Math.sin((x / 1000) * Math.PI) * 35;
+          ctx.globalAlpha = .62 + .3 * Math.sin(now * .002 + i);
+          ctx.fillStyle = i % 2 ? "#ffd38b" : "#ffd9bd"; ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 10;
+          ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+        }
+        ctx.globalAlpha = 1;
+        // Warm stone floor with thin reflective joints.
+        const floor = ctx.createLinearGradient(0, 463, 0, 620); floor.addColorStop(0, "#4c3548"); floor.addColorStop(1, "#382c40");
+        ctx.fillStyle = floor; ctx.fillRect(0, 464, 1000, 156);
+        ctx.strokeStyle = "rgba(231,174,158,.13)"; ctx.lineWidth = 1;
+        for (let i = 0; i < 7; i++) { const y = 482 + i * 25; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1000, y); ctx.stroke(); }
+        for (let x = 95; x < 1000; x += 135) { ctx.beginPath(); ctx.moveTo(x, 464); ctx.lineTo(x - 42, 620); ctx.stroke(); }
+        // Five stylized red-and-gold Chinese celebration boxes. Each tap
+        // launches from its matching box in the five-photo sequence.
+        for (let i = 0; i < 5; i++) {
+          const bx = LAUNCHER_X[i], by = 499 + (i % 2) * 4;
+          const activeIndex = story.activeFirework ? story.activeFirework.photoIndex : Math.min(story.photosRevealed, 4);
+          const selected = i === activeIndex && !story.finaleVisible;
+          ctx.fillStyle = "rgba(12,14,29,.27)"; ctx.beginPath(); ctx.ellipse(bx + 34, 584, 39, 7, 0, 0, Math.PI * 2); ctx.fill();
+          const box = ctx.createLinearGradient(bx, by, bx + 71, by + 74); box.addColorStop(0, selected ? "#e45f59" : "#b94751"); box.addColorStop(1, "#702c4e");
+          fillRound(ctx, bx, by, 70, 77, 8, box); strokeRound(ctx, bx + 3, by + 3, 64, 70, 6, "#f8c96f", 1.5);
+          ctx.strokeStyle = "rgba(255,218,126,.75)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bx + 5, by + 16); ctx.lineTo(bx + 65, by + 16); ctx.moveTo(bx + 5, by + 61); ctx.lineTo(bx + 65, by + 61); ctx.stroke();
+          ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = "#ffebbc"; ctx.font = "bold 25px ui-sans-serif, system-ui, sans-serif"; ctx.fillText("福", bx + 35, by + 40);
+          ctx.fillStyle = "#f6cc76"; ctx.font = "bold 7px ui-sans-serif, system-ui, sans-serif"; ctx.fillText(String(i + 1).padStart(2, "0"), bx + 35, by + 68);
+          // The fuse flicker waits for its own memory's tap.
+          if (story.activeFirework && story.activeFirework.photoIndex === i && sceneClock(now) >= 0) {
+            ctx.fillStyle = "#ffe99e"; ctx.shadowColor = "#ffb75e"; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(bx + 34, by - 3, 3, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+          }
+        }
+      }
+
+      function makeRandom(seed) {
+        let state = seed >>> 0;
+        return function next() {
+          state += 0x6D2B79F5;
+          let value = state;
+          value = Math.imul(value ^ value >>> 15, value | 1);
+          value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+          return ((value ^ value >>> 14) >>> 0) / 4294967296;
+        };
+      }
+
+      function launchPhotoFirework(index, now) {
+        const targetX = [350, 425, 500, 575, 650][index];
+        const targetY = [193, 161, 212, 170, 204][index];
+        const originX = LAUNCHER_X[index] + 35;
+        const random = makeRandom((Date.now() + index * 991) >>> 0);
+        const particles = [];
+        // Two concentric flower bursts give each photograph a bright, layered
+        // frame without image sprites or a costly DOM node per spark.
+        for (let i = 0; i < 115; i++) {
+          const angle = (Math.PI * 2 * i) / 115 + (random() - .5) * .1;
+          const speed = 46 + random() * 122;
+          particles.push({ angle, speed, radius: 1.6 + random() * 2.5, color: FIREWORK_COLORS[i % FIREWORK_COLORS.length], life: .96 + random() * .38 });
+        }
+        for (let i = 0; i < 40; i++) {
+          const angle = Math.PI * 2 * random(), speed = 30 + random() * 100;
+          particles.push({ angle, speed, radius: 1.1 + random() * 1.7, color: FIREWORK_COLORS[(i + 3) % FIREWORK_COLORS.length], life: .6 + random() * .35 });
+        }
+        story.activeFirework = { photoIndex: index, startedAt: now, originX, targetX, targetY, particles, exploded: false };
+        story.photosRevealed = index + 1;
+        updateFireworkControls();
+        liveAnnouncement.textContent = `Photo ${index + 1} of 5 is on its way into the sky.`;
+        if (navigator.vibrate && !prefersLessMotion()) { try { navigator.vibrate(18); } catch (_) { /* Optional haptic feedback. */ } }
+      }
+
+      function drawActiveFirework(ctx, now) {
+        const spark = story.activeFirework; if (!spark) return;
+        const age = Math.max(0, now - spark.startedAt);
+        const launchTime = 890;
+        const travel = clamp(age / launchTime, 0, 1);
+        const progress = easeOutCubic(travel);
+        const rocketX = lerp(spark.originX, spark.targetX, progress);
+        const rocketY = lerp(545, spark.targetY, progress);
+        // Hair-thin hot trail and two sparks behind the climbing rocket.
+        if (age < launchTime) {
+          const gradient = ctx.createLinearGradient(spark.originX, 545, rocketX, rocketY);
+          gradient.addColorStop(0, "rgba(255,163,93,0)"); gradient.addColorStop(.75, "rgba(255,193,114,.65)"); gradient.addColorStop(1, "rgba(255,247,203,.93)");
+          ctx.strokeStyle = gradient; ctx.lineWidth = 3.4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(spark.originX, 545); ctx.lineTo(rocketX, rocketY); ctx.stroke();
+          ctx.shadowColor = "#fff0b9"; ctx.shadowBlur = 17; ctx.fillStyle = "#fff7d4"; ctx.beginPath(); ctx.arc(rocketX, rocketY, 4.3, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+          for (let i = 1; i <= 3; i++) {
+            const fraction = Math.max(0, travel - i * .075);
+            ctx.globalAlpha = 1 - i * .25; ctx.fillStyle = i === 1 ? "#ffca73" : "#ef8276";
+            ctx.beginPath(); ctx.arc(lerp(spark.originX, spark.targetX, fraction) + Math.sin(now * .023 + i) * 2, lerp(545, spark.targetY, fraction) + 12, 2.5 - i * .35, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
+        // A deterministic constellation of hundreds of tiny bloom particles.
+        if (age >= launchTime) {
+          const burstAge = (age - launchTime) / 1000;
+          const elapsedSeconds = Math.max(0, burstAge);
+          ctx.save(); ctx.globalCompositeOperation = "lighter";
+          for (const particle of spark.particles) {
+            const time = elapsedSeconds * particle.life;
+            const damped = particle.speed * (1 - Math.min(.58, elapsedSeconds * .2));
+            const px = spark.targetX + Math.cos(particle.angle) * damped * time;
+            const py = spark.targetY + Math.sin(particle.angle) * damped * time + 27 * time * time;
+            const alpha = clamp(1 - time / 2.7, 0, 1);
+            if (alpha <= 0) continue;
+            ctx.globalAlpha = alpha; ctx.fillStyle = particle.color; ctx.shadowColor = particle.color; ctx.shadowBlur = 10;
+            ctx.beginPath(); ctx.arc(px, py, particle.radius * Math.max(.35, alpha), 0, Math.PI * 2); ctx.fill();
+            if (particle.radius > 3 && alpha > .25) {
+              ctx.strokeStyle = particle.color; ctx.lineWidth = .9; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - Math.cos(particle.angle) * 6 * alpha, py - Math.sin(particle.angle) * 6 * alpha); ctx.stroke();
+            }
+          }
+          ctx.globalAlpha = 1; ctx.shadowBlur = 0; ctx.restore();
+          // White-hot core dissolves quickly so the photo has room to glow.
+          const core = Math.max(0, 1 - elapsedSeconds * 1.45);
+          if (core > 0) { ctx.globalAlpha = core; ctx.fillStyle = "#fff8de"; ctx.shadowColor = "#fff2bd"; ctx.shadowBlur = 28; ctx.beginPath(); ctx.arc(spark.targetX, spark.targetY, 7 * core + 2, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.globalAlpha = 1; }
+        }
+        // Crossfade in and then out within the glowing particle flower.
+        const fadeIn = clamp((age - 820) / 500, 0, 1);
+        const fadeOut = clamp((3740 - age) / 650, 0, 1);
+        const photoOpacity = Math.min(fadeIn, fadeOut);
+        if (photoOpacity > .02 && !story.finaleVisible) {
+          showPhotoCard(spark.photoIndex, spark.targetX, spark.targetY, photoOpacity);
+        } else {
+          hidePhotoCard();
+        }
+        // Allow one memory to finish blooming and fade completely before the
+        // next TOUCH can launch, keeping the five-image story in a clear order.
+        if (age >= 3820) {
+          story.activeFirework = null;
+          hidePhotoCard();
+          if (story.photosRevealed >= photoFiles.length) {
+            story.finaleVisible = true;
+            goodLuckTitle.classList.add("is-visible");
+            liveAnnouncement.textContent = "All five memories are in the sky. GOOD LUCK MY FRIEND.";
+          }
+          updateFireworkControls();
+        }
+      }
+
+      function showPhotoCard(index, x, y, opacity) {
+        const source = photoFiles[index];
+        photoCard.classList.add("is-visible");
+        photoCard.style.left = `${(x / WORLD.width) * 100}%`;
+        photoCard.style.top = `${(y / WORLD.height) * 100}%`;
+        const softMotion = prefersLessMotion() ? .97 : .92 + opacity * .08;
+        photoCard.style.opacity = String(opacity);
+        photoCard.style.transform = `translate(-50%, -50%) scale(${softMotion}) rotate(${(index % 2 ? 2.2 : -2.2) * opacity}deg)`;
+        if (photoImage.dataset.photo !== source) {
+          photoImage.dataset.photo = source;
+          photoImage.alt = `Friend memory photo ${index + 1}; replace ${source} with your own picture.`;
+          fallbackLabel.textContent = `Add ${source}`;
+          photoCaption.textContent = `A little memory · 0${index + 1}`;
+          photoFallback.classList.add("is-visible");
+          photoImage.style.display = "block";
+          photoImage.onload = () => photoFallback.classList.remove("is-visible");
+          photoImage.onerror = () => { photoImage.style.display = "none"; photoFallback.classList.add("is-visible"); };
+          photoImage.src = source;
+        }
+      }
+
+      function hidePhotoCard() {
+        photoCard.style.opacity = "0";
+        photoCard.style.transform = "translate(-50%, -50%) scale(.8) rotate(0deg)";
+        photoCard.classList.remove("is-visible");
+      }
+
+      function drawBalconyScene(now) {
+        const ctx = prepareCanvas(storyCanvas); if (!ctx) return;
+        ctx.clearRect(0, 0, WORLD.width, WORLD.height);
+        drawNightBalcony(ctx, now);
+        drawActiveFirework(ctx, now);
+      }
+
+      // Scene transitions are explicit, easy-to-follow state changes. Their
+      // timings are tied to sceneStart rather than frame counts, so slow phones
+      // do not alter the story duration or staircase physics.
+      function setStoryScene(scene, now) {
+        story.scene = scene;
+        story.sceneStartedAt = now;
+        const copy = sceneContent[scene];
+        stageStatus.textContent = copy.status;
+        scenePill.textContent = copy.name;
+        storySubtitle.textContent = copy.subtitle;
+        chapterTitle.textContent = copy.title;
+        chapterHint.textContent = copy.hint;
+        $("#chapterIcon").textContent = copy.icon;
+        if (scene === "balcony") {
+          storyActions.hidden = true;
+          fireworkControls.hidden = false;
+          updateFireworkControls();
+          liveAnnouncement.textContent = "The night balcony. Tap TOUCH to reveal the first photo in the fireworks.";
+        } else {
+          storyActions.hidden = false;
+          fireworkControls.hidden = true;
+        }
+      }
+
+      function updateStoryState(now) {
+        if (story.scene === "living" && sceneClock(now) >= 7000) setStoryScene("lounge", now);
+        else if (story.scene === "lounge" && sceneClock(now) >= 5850) setStoryScene("balcony", now);
+      }
+
+      function drawMemoryScene(now) {
+        updateStoryState(now);
+        if (story.scene === "living") drawLivingScene(now);
+        else if (story.scene === "lounge") drawLoungeScene(now);
+        else drawBalconyScene(now);
+      }
+
+      function ensureAnimationLoop() {
+        if (!animationFrame && (activeScreen === "courtyard" || activeScreen === "memory")) animationFrame = requestAnimationFrame(renderFrame);
+      }
+      function stopAnimationLoop() {
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      }
+      function renderFrame(now) {
+        animationFrame = 0;
+        if (document.hidden) return;
+        if (activeScreen === "courtyard") drawCourtyard(now);
+        else if (activeScreen === "memory") drawMemoryScene(now);
+        if (activeScreen === "courtyard" || activeScreen === "memory") animationFrame = requestAnimationFrame(renderFrame);
+      }
+      function showScreen(name) {
+        stopAnimationLoop();
+        activeScreen = name;
+        for (const [key, screen] of Object.entries(screens)) {
+          const isCurrent = key === name;
+          screen.classList.toggle("is-active", isCurrent);
+          screen.setAttribute("aria-hidden", String(!isCurrent));
+        }
+        document.body.dataset.page = name;
+        if (name === "courtyard" || name === "memory") ensureAnimationLoop();
+      }
+
+      function resetStory(now = performance.now()) {
+        story = { scene: "living", sceneStartedAt: now, activeFirework: null, photosRevealed: 0, finaleVisible: false, photoCardVisible: false };
+        hidePhotoCard(); goodLuckTitle.classList.remove("is-visible");
+        setStoryScene("living", now); updateFireworkControls();
+      }
+
+      // Both the actual timber door and the large on-screen CTA use this same
+      // one-shot transition, so the two controls can never drift out of sync.
+      function openChaletDoor() {
+        if (doorTransitionStarted) return;
+        doorTransitionStarted = true;
+        door.classList.add("is-open");
+        door.disabled = true; openDoorButton.disabled = true;
+        openDoorButton.textContent = "COME ON IN…";
+        liveAnnouncement.textContent = "The chalet door is opening.";
+        window.setTimeout(() => {
+          resetStory(performance.now());
+          showScreen("memory");
+        }, 1500);
+      }
+
+      async function startMusic() {
+        if (!audio) return;
+        audio.volume = .38;
+        try {
+          await audio.play();
+          audioHint.textContent = "A little tune for the journey. Take your time at the door.";
+          updateSoundButtons();
+        } catch (_) {
+          // Local friend-owned music can be dropped beside index.html at any
+          // time; lack of bg.mp3 must never interrupt the illustrated story.
+          audioHint.textContent = "Add your looping bg.mp3 beside this page for the background music.";
+          liveAnnouncement.textContent = "The story is ready. Add bg.mp3 to this folder when you are ready to add its music.";
+          updateSoundButtons();
+        }
+      }
+      function updateSoundButtons() {
+        const playing = !audio.paused && !audio.muted;
+        for (const button of soundButtons) {
+          if (!button) continue;
+          button.dataset.playing = String(playing);
+          button.setAttribute("aria-pressed", String(audio.muted));
+          button.setAttribute("aria-label", audio.muted ? "Turn music on" : "Mute music");
+          const label = button.querySelector(".sound-label");
+          if (label) label.textContent = audio.muted ? "Sound off" : "Sound on";
+        }
+      }
+      function toggleMusic() {
+        if (audio.paused) { audio.muted = false; startMusic(); return; }
+        audio.muted = !audio.muted;
+        updateSoundButtons();
+      }
+
+      function updateFireworkControls() {
+        const completed = story.photosRevealed;
+        progressLabel.textContent = `${String(completed).padStart(2, "0")} / 05`;
+        fireworkProgress.setAttribute("aria-label", `${completed} of 5 photos revealed`);
+        progressDots.innerHTML = Array.from({ length: 5 }, (_, i) => `<span class="progress-dot${i < completed ? " is-done" : ""}"></span>`).join("");
+        const busy = Boolean(story.activeFirework);
+        touchButton.hidden = story.finaleVisible;
+        touchButton.disabled = busy || completed >= photoFiles.length || story.scene !== "balcony";
+        touchButtonLabel.textContent = busy ? "LOOK UP…" : "TOUCH";
+        touchButton.setAttribute("aria-label", busy ? "Firework in progress; watch the photo appear and fade away" : `Touch to launch photo firework ${Math.min(completed + 1, 5)} of 5`);
+        replayFireworksButton.hidden = !story.finaleVisible;
+      }
+
+      function skipToBalcony() {
+        if (story.scene === "balcony") return;
+        story.activeFirework = null;
+        story.photosRevealed = 0; story.finaleVisible = false;
+        hidePhotoCard(); goodLuckTitle.classList.remove("is-visible");
+        setStoryScene("balcony", performance.now()); updateFireworkControls();
+      }
+
+      function replayFiveMemories() {
+        story.activeFirework = null; story.photosRevealed = 0; story.finaleVisible = false;
+        hidePhotoCard(); goodLuckTitle.classList.remove("is-visible");
+        updateFireworkControls();
+        liveAnnouncement.textContent = "Ready for five more memories.";
+        touchButton.focus();
+      }
+
+      function onEnter() {
+        startMusic();
+        doorTransitionStarted = false;
+        door.classList.remove("is-open"); door.disabled = false; openDoorButton.disabled = false;
+        openDoorButton.innerHTML = 'OPEN THE DOOR <span aria-hidden="true">↗</span>';
+        pageTwoStartedAt = performance.now();
+        showScreen("courtyard");
+        liveAnnouncement.textContent = "The sunny chalet is waiting. A silver car pulls in, and two friends are playing on the lawn.";
+      }
+
+      enterButton.addEventListener("click", onEnter);
+      door.addEventListener("click", openChaletDoor);
+      door.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openChaletDoor(); } });
+      openDoorButton.addEventListener("click", openChaletDoor);
+      soundButtons.forEach((button) => button?.addEventListener("click", toggleMusic));
+      skipStoryButton.addEventListener("click", skipToBalcony);
+      replayFireworksButton.addEventListener("click", replayFiveMemories);
+      touchButton.addEventListener("click", () => {
+        if (story.scene !== "balcony" || story.activeFirework || story.photosRevealed >= photoFiles.length) return;
+        launchPhotoFirework(story.photosRevealed, performance.now());
+      });
+
+      
+      window.addEventListener("resize", () => { if (activeScreen === "courtyard" || activeScreen === "memory") ensureAnimationLoop(); }, { passive: true });
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) ensureAnimationLoop(); });
+      audio.addEventListener("play", updateSoundButtons);
+      audio.addEventListener("pause", updateSoundButtons);
+      audio.addEventListener("volumechange", updateSoundButtons);
+      audio.addEventListener("error", () => { if (activeScreen !== "welcome") audioHint.textContent = "Add your looping bg.mp3 beside this page for the background music."; updateSoundButtons(); });
+
+      
+      updateSoundButtons();
+    })();
+  </script>
+</body>
+</html>
